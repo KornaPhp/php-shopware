@@ -162,6 +162,10 @@ The `assignRecursive` method enables deeply nested, JSON-serialized data structu
 
 Note: `assignRecursive` uses reflection and creates nested struct instances, so it is noticeably slower than the classic shallow `assign` and is intended for import/export and (re-)hydration scenarios rather than tight, performance-critical loops.
 
+### Improved translation installation
+
+Installing a translation now will always create a corresponding snippet set. This fixes issues with shop instances that are migrating from translations provided by a plugin to the core, where uninstalling the plugin could lead to a missing snippet set.
+
 ### Performance improvements for generating category SEO-Urls
 
 We don't synchronously fetch and generate the SEO-Urls for all child categories anymore.
