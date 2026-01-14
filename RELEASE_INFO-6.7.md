@@ -283,6 +283,37 @@ This prevents cases where SEO-Urls were generated multiple times for the same ca
 
 ## Administration
 
+As part of this change, the following deprecations were made:
+- The `order_line_item.states` field is deprecated in favor of `order_line_item.payload.product_type`.
+- `\Shopware\Core\Checkout\Cart\LineItem\LineItem::$states` is deprecated in favor of `\Shopware\Core\Checkout\Cart\LineItem\LineItem::$payload['productType']`.
+- The `LineItemProductStatesRule` is deprecated in favor of the new `LineItemProductTypeRule`.
+- The `StatesUpdater` service and its related dispatched events (`ProductStatesBeforeChangeEvent`, `ProductStatesChangedEvent`) are deprecated.
+- A new parameter `shopware.product.allowed_types` was introduced to allow third-party developers to register additional product types.
+- For more details, please refer to the [2025-11-14-introduce-product-type-and-deprecate-states.md](adr%2F2025-11-14-introduce-product-type-and-deprecate-states.md)
+
+If you have using the rule `LineItemProductStatesRule`, product stream filters, or product listing filters that rely on `product.states`, you should update them to use the new `product.type` field instead.
+If you create digital products using admin api, you should explicitly set the `type` field to `digital` when creating new products instead of relying on backend handling.
+
+## Administration
+When the initial page takes more than two seconds to load, a loading indicator appears instead of a blank page.
+### Axios upgrade with dual-client dispatcher
+
+The Administration now supports axios 1.x alongside the existing axios 0.30.2 to address security vulnerability CVE-2023-45857. A dual-client dispatcher pattern has been implemented that allows both versions to coexist, enabling a gradual migration path for plugins and custom code.
+
+**Current behavior (6.7.x):**
+- Default: axios 0.30.2 (backward compatible)
+- Opt-in: Add `useAxiosV1: true` to request configuration to use axios 1.x
+
+**Future behavior (6.8.0+):**
+- Default: axios 1.x (when `V6_8_0_0` feature flag is active)
+- Opt-out: Add `useAxiosV1: false` if axios 0.30.2 is still needed
+
+**Key differences between versions:**
+- **Cancellation**: axios 0.x uses `CancelToken`, axios 1.x uses `AbortController` (modern standard)
+- **Error codes**: axios 1.x provides more standardized error codes like `ERR_CANCELED`
+
+Plugin developers should test their code with `useAxiosV1: true` to ensure compatibility before the 6.8 release. The migration guide is available at `technical-docs/09-security/axios-migration-guide.md`.
+
 ### Loading indicator for whole page
 
 When the initial page takes more than two seconds to load, a loading indicator appears instead of a blank page.
