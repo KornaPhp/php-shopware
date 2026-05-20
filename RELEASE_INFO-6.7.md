@@ -4,6 +4,20 @@
 
 ## API
 
+### New foreign key resolvers for the Sync API
+
+The Sync API now ships seven additional foreign key resolvers, allowing payloads to reference entities by stable human-readable keys instead of UUIDs:
+
+* `currency.iso_code` — resolves a `currency` by its `isoCode` (e.g. `EUR`).
+* `locale.code` — resolves a `locale` by its `code` (e.g. `en-GB`). The `en_GB` underscore variant is also accepted.
+* `payment_method.technical_name` — resolves a `payment_method` by its `technicalName`.
+* `shipping_method.technical_name` — resolves a `shipping_method` by its `technicalName`.
+* `document_type.technical_name` — resolves a `document_type` by its `technicalName`.
+* `salutation.salutation_key` — resolves a `salutation` by its `salutationKey` (e.g. `mr`).
+* `tax.tax_rate` — resolves a `tax` by its `taxRate`. Because `tax_rate` is not unique, the resolver only resolves a value when exactly one tax row matches the given rate; ambiguous rates are left unresolved (combine with `nullOnMissing: true` if appropriate).
+
+Use these inside a Sync payload anywhere a UUID is expected, e.g. `{"currencyId": {"resolver": "currency.iso_code", "value": "EUR"}}`.
+
 ### Mail template preview and send routes support richer rendering context
 
 The mail template Admin API now exposes dedicated preview and send routes:
@@ -109,6 +123,7 @@ This helps developers and merchants validate the final rendered output more accu
 
 The HTML preview is now rendered in a sandboxed iframe instead of being injected directly into the Administration DOM.
 This keeps the preview close to the actual mail output while reducing the risk of script execution from rendered template content.
+
 ### Custom fields respect read-only permissions in Administration detail views
 
 Custom fields on category, landing page, sales channel, customer address, and order address detail views are now disabled when the current user only has read permissions.
